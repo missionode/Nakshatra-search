@@ -39,16 +39,16 @@ h1 {
   transition: transform 0.2s ease;
 }
 
-.result-card:hover {
+.insight-card:hover {
   transform: translateY(-3px);
 }
 
-.result-card h2 {
+.insight-card h2 {
   margin-top: 0;
   color: #1976d2;
 }
 
-.result-card p {
+.insight-card p {
   margin: 0.3rem 0;
   font-size: 0.95rem;
 }
