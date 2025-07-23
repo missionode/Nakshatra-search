@@ -1,18 +1,64 @@
-body { font-family: 'Roboto', sans-serif; margin: 0; padding: 0; background-color: #f4f6f8; color: #333; }
 
-.container { max-width: 800px; margin: 40px auto; padding: 20px; background: #fff; border-radius: 12px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); }
+@import url('https://fonts.googleapis.com/css2?family=Roboto&display=swap');
 
-h1 { font-size: 24px; margin-bottom: 20px; text-align: center; }
+body {
+  font-family: 'Roboto', sans-serif;
+  margin: 0;
+  padding: 0;
+  background-color: #f5f7fa;
+  color: #333;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  min-height: 100vh;
+}
 
-.result-card { padding: 16px; margin-bottom: 16px; border: 1px solid #e0e0e0; border-radius: 8px; background-color: #fafafa; }
+.container {
+  max-width: 900px;
+  padding: 2rem;
+  margin-top: 3rem;
+  width: 100%;
+  box-sizing: border-box;
+}
 
-.result-card h2 { font-size: 18px; margin-bottom: 8px; color: #1976d2; }
+h1 {
+  font-size: 2rem;
+  font-weight: 500;
+  color: #1976d2;
+  margin-bottom: 2rem;
+  text-align: center;
+}
 
-.result-card p { margin: 4px 0; font-size: 14px; }
+.result-card {
+  background-color: #fff;
+  border-radius: 12px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+  transition: transform 0.2s ease;
+}
 
-@media (max-width: 600px) { .container { padding: 10px; }
+.result-card:hover {
+  transform: translateY(-3px);
+}
 
-h1 { font-size: 20px; }
+.result-card h2 {
+  margin-top: 0;
+  color: #1976d2;
+}
 
-.result-card { padding: 12px; } }
+.result-card p {
+  margin: 0.3rem 0;
+  font-size: 0.95rem;
+}
 
+@media screen and (max-width: 600px) {
+  .container {
+    padding: 1rem;
+  }
+
+  h1 {
+    font-size: 1.5rem;
+  }
+}
