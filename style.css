@@ -39,6 +39,17 @@ h1 {
   transition: transform 0.2s ease;
 }
 
+.insight-card ul {
+    list-style: none;
+    padding: 10px;
+ }
+
+.insight-card li {
+    padding-bottom: 5px;
+    font-size: 19px;
+    color: #737999;
+ }
+
 .insight-card:hover {
   transform: translateY(-3px);
 }
