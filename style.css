@@ -1,0 +1,18 @@
+body { font-family: 'Roboto', sans-serif; margin: 0; padding: 0; background-color: #f4f6f8; color: #333; }
+
+.container { max-width: 800px; margin: 40px auto; padding: 20px; background: #fff; border-radius: 12px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); }
+
+h1 { font-size: 24px; margin-bottom: 20px; text-align: center; }
+
+.result-card { padding: 16px; margin-bottom: 16px; border: 1px solid #e0e0e0; border-radius: 8px; background-color: #fafafa; }
+
+.result-card h2 { font-size: 18px; margin-bottom: 8px; color: #1976d2; }
+
+.result-card p { margin: 4px 0; font-size: 14px; }
+
+@media (max-width: 600px) { .container { padding: 10px; }
+
+h1 { font-size: 20px; }
+
+.result-card { padding: 12px; } }
+
