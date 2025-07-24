@@ -1,85 +1,92 @@
+// script.js
 
-document.addEventListener("DOMContentLoaded", () => {
+// Nakshatra Data with Malayalam prefix
+const nakshatraData = [
+  { name: "Ashwini", malayalam: "അശ്വതി" },
+  { name: "Bharani", malayalam: "ഭരണി" },
+  { name: "Krittika", malayalam: "കാർത്തിക" },
+  { name: "Rohini", malayalam: "റോഹിണി" },
+  { name: "Mrigashira", malayalam: "മകം" },
+  { name: "Ardra", malayalam: "തിരുവാതിര" },
+  { name: "Punarvasu", malayalam: "പുണർതം" },
+  { name: "Pushya", malayalam: "പൂയം" },
+  { name: "Ashlesha", malayalam: "ആയില്യം" },
+  { name: "Magha", malayalam: "മകം" },
+  { name: "Purva Phalguni", malayalam: "പൂരം" },
+  { name: "Uttara Phalguni", malayalam: "ഉത്രം" },
+  { name: "Hasta", malayalam: "അസ്ഥം" },
+  { name: "Chitra", malayalam: "ചിത്തിര" },
+  { name: "Swati", malayalam: "ചോതി" },
+  { name: "Vishakha", malayalam: "വിശാഖം" },
+  { name: "Anuradha", malayalam: "അനിഴം" },
+  { name: "Jyeshtha", malayalam: "തൃക്കേട്ട" },
+  { name: "Mula", malayalam: "മൂലം" },
+  { name: "Purva Ashadha", malayalam: "പൂർവഷാഡ" },
+  { name: "Uttara Ashadha", malayalam: "ഉത്തരഷാഡ" },
+  { name: "Shravana", malayalam: "തിരുവോണം" },
+  { name: "Dhanishta", malayalam: "അവിട്ടം" },
+  { name: "Shatabhisha", malayalam: "ചതയം" },
+  { name: "Purva Bhadrapada", malayalam: "പൂർവപ്രോഷഠപാദം" },
+  { name: "Uttara Bhadrapada", malayalam: "ഉത്തറപ്രോഷഠപാദം" },
+  { name: "Revati", malayalam: "രേവതി" }
+];
 
-  const nakshatraList = [
-    "Ashwini~അശ്വതി", "Bharani~ഭരണി", "Krittika~കാർത്തിക", "Rohini~രോഹിണി", "Mrigashira~മകയിരം",
-    "Ardra~തിരുവാതിര", "Punarvasu~പുനഃർതം", "Pushya~പൂയം", "Ashlesha~ആയില്യം", "Magha~മകം",
-    "Purva Phalguni~ഉത്രം", "Uttara Phalguni~അത്തം", "Hasta~ചിത്തിര", "Chitra~ചോതി", "Swati~വിശാഖം",
-    "Vishakha~അനിഴം", "Anuradha~തൃക്കേട്ട", "Jyeshtha~തൃക്കേട്ട", "Mula~മൂലം", "Purva Ashadha~പൂരാടം",
-    "Uttara Ashadha~ഉത്രാടം", "Shravana~തിരുവോണം", "Dhanishta~അവിട്ടം", "Shatabhisha~ചതയം", "Purva Bhadrapada~പൂരുരുട്ടാതി",
-    "Uttara Bhadrapada~ഉത്രട്ടാതി", "Revati~രേവതി"
-  ];
+function getTodayNakshatra() {
+  const today = new Date();
+  const seed = today.getFullYear() * 10000 + (today.getMonth() + 1) * 100 + today.getDate();
+  const index = seed % 27;
+  return nakshatraData[index];
+}
 
- 
-  const resultsContainer = document.getElementById("results");
+function calculateResults(todayNakshatra, referenceNakshatra) {
+  const results = [];
 
-  function getTodaysNakshatraIndex() {
-    const baseDate = new Date("2020-01-01");
-    const today = new Date();
-    const daysElapsed = Math.floor((today - baseDate) / (1000 * 60 * 60 * 24));
-    return daysElapsed % 27;
+  if (todayNakshatra.name !== referenceNakshatra.name) {
+    const safe = (todayNakshatra.name.length + referenceNakshatra.name.length) % 2 === 0;
+    const dating = (todayNakshatra.name.charCodeAt(0) % 3) === (referenceNakshatra.name.charCodeAt(0) % 3);
+    const consent = (todayNakshatra.name.length % 2) === 1 && (referenceNakshatra.name.length % 2) === 1;
+    const fertility = (todayNakshatra.name.charCodeAt(1) + referenceNakshatra.name.charCodeAt(1)) % 5 > 2;
+
+    if (safe) results.push("🛡️ Safety Period: Yes");
+    if (dating) results.push("🌱 Dating Interest: Yes");
+    if (consent) results.push("💖 Consent: Yes");
+    if (fertility) results.push("🧬 Fertility Chance: High");
   }
 
-  function calculateInsight(index) {
-    const nak = nakshatraList[index];
-    const dayNumber = index + 1;
+  return results;
+}
 
-    // Example pattern formulas (simplified; you can expand later)
-    const isSafe = dayNumber % 2 === 0;
-    const interestedInDating = (dayNumber % 3 === 1 || dayNumber === 7);
-    const consentPossible = (dayNumber % 5 === 0 || nak.includes("Ash"));
-    const oppositionLikely = (dayNumber % 4 === 0 && !nak.includes("Pu"));
-    const fertility = (dayNumber % 3 === 0 || dayNumber === 6);
+function renderResults() {
+  const select = document.getElementById("referenceSelect");
+  const referenceName = select.value;
+  const referenceNakshatra = nakshatraData.find(n => n.name === referenceName);
 
-    // Only show if at least one positive insight
-    if (isSafe || interestedInDating || consentPossible || fertility) {
-      return {
-        nakshatra: nak,
-        isSafe,
-        interestedInDating,
-        consentPossible,
-        oppositionLikely,
-        fertility
-      };
-    }
+  const todayNakshatra = getTodayNakshatra();
+  const results = calculateResults(todayNakshatra, referenceNakshatra);
 
-    return null;
+  const display = document.getElementById("results");
+  display.innerHTML = "";
+
+  const heading = document.createElement("h2");
+  heading.textContent = `Today's Nakshatra: ${todayNakshatra.malayalam} (${todayNakshatra.name})`;
+  display.appendChild(heading);
+
+  if (results.length === 0) {
+    const noResults = document.createElement("p");
+    noResults.textContent = "No positive indications today.";
+    display.appendChild(noResults);
+  } else {
+    const ul = document.createElement("ul");
+    results.forEach(result => {
+      const li = document.createElement("li");
+      li.textContent = result;
+      ul.appendChild(li);
+    });
+    display.appendChild(ul);
   }
+}
 
-  function renderInsightCard(insight) {
-    const card = document.createElement("div");
-    card.className = "insight-card";
+document.getElementById("referenceSelect").addEventListener("change", renderResults);
 
-    card.innerHTML = `
-      <h2>${insight.nakshatra}</h2>
-      <ul>
-        ${insight.isSafe ? "<li>✅ Safety period active</li>" : ""}
-        ${insight.interestedInDating ? "<li>💞 Likely open to dating</li>" : ""}
-        ${insight.consentPossible ? "<li>💬 Openness to intimacy</li>" : ""}
-        ${insight.fertility ? "<li>🌸 Fertility is high</li>" : ""}
-      </ul>
-    `;
-
-    resultsContainer.appendChild(card);
-  }
-
-  function runApp() {
-    resultsContainer.innerHTML = "";
-
-    const todayIndex = getTodaysNakshatraIndex();
-
-    for (let i = 0; i < nakshatraList.length; i++) {
-      const result = calculateInsight(i);
-      if (result) {
-        renderInsightCard(result);
-      }
-    }
-
-    const info = document.createElement("div");
-    info.className = "footer-note";
-    info.innerHTML = `<p><strong>Today's reference Nakshatra Index:</strong> ${todayIndex + 1} (${nakshatraList[todayIndex]})</p>`;
-    resultsContainer.appendChild(info);
-  }
-
-  runApp();
-});
+// Initialize on load
+document.addEventListener("DOMContentLoaded", renderResults);
