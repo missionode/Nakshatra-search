@@ -1,4 +1,4 @@
-// List of 27 Nakshatras with indices and Yoni animals
+// Nakshatras with indices and Yonis
 const nakshatras = [
     { name: 'Ashwini', index: 0, yoni: 'Horse' },
     { name: 'Bharani', index: 1, yoni: 'Elephant' },
@@ -29,80 +29,123 @@ const nakshatras = [
     { name: 'Revati', index: 26, yoni: 'Elephant' }
 ];
 
-// Current astrological data (hypothetical for July 25, 2025, 04:53 AM IST)
-const currentNakshatraIndex = 10; // Purva Phalguni
-const isFavorableTithi = true;    // Shukla Dwitiya
-const isFavorableDay = true;      // Friday
-const isWaxingMoon = true;        // Waxing phase
-
-// Function to calculate Tara Bala (favorable if Sampat, Kshema, Sadhana, Mitra, Parama Mitra)
-function getTaraBala(selectedIndex, currentIndex) {
-    const diff = (currentIndex - selectedIndex + 27) % 9;
-    return [2, 4, 6, 8, 0].includes(diff); // Favorable Tara positions
+// Simulated astrological data based on current date (for prototype)
+function getCurrentAstroData() {
+    const now = new Date();
+    const dayOfWeek = now.getDay(); // 0 = Sunday, 5 = Friday
+    // Simulate Nakshatra based on day of month (27 Nakshatras, cycle every 27 days)
+    const dayOfMonth = now.getDate();
+    const currentNakshatraIndex = (dayOfMonth - 1) % 27;
+    // Simulate waxing/waning Moon based on date (approximate 15-day cycle)
+    const isWaxingMoon = dayOfMonth <= 15;
+    // Simulate favorable Tithi (assume true for simplicity)
+    const isFavorableTithi = dayOfMonth % 2 === 0; // Even days as favorable
+    const isFavorableDay = dayOfWeek === 5; // Friday
+    return { currentNakshatraIndex, isFavorableTithi, isFavorableDay, isWaxingMoon };
 }
 
-// Function to calculate Yoni compatibility (simplified)
-function getCompatibility(selectedYoni, otherYoni) {
-    return selectedYoni === otherYoni ? 100 : 50; // 100% if same Yoni, 50% otherwise
+// Calculate Tara position
+function getTaraPosition(birthIndex, currentIndex) {
+    return (currentIndex - birthIndex + 27) % 9;
 }
 
-// Populate the dropdown with Nakshatras
-const select = document.getElementById('janma-nakshatra');
+// Check if Tara is favorable
+function isFavorableTara(position) {
+    return [2, 4, 6, 8, 0].includes(position); // Sampat, Kshema, Sadhana, Mitra, Parama Mitra
+}
+
+// Get Tara score for initiation decision
+function getTaraScore(position) {
+    const scores = {
+        0: 5, // Parama Mitra
+        8: 4, // Mitra
+        6: 3, // Sadhana
+        4: 2, // Kshema
+        2: 1, // Sampat
+        1: 0, // Janma
+        3: -1, // Vipat
+        5: -2, // Pratyak
+        7: -3 // Naidhana
+    };
+    return scores[position] || 0;
+}
+
+// Calculate compatibility (simplified Yoni Kuta)
+function getCompatibility(seekerYoni, partnerYoni) {
+    return seekerYoni === partnerYoni ? 100 : 50;
+}
+
+// Populate dropdowns
+const seekerSelect = document.getElementById('seeker-nakshatra');
+const partnerSelect = document.getElementById('partner-nakshatra');
 nakshatras.forEach((nakshatra, index) => {
-    const option = document.createElement('option');
-    option.value = index;
-    option.textContent = nakshatra.name;
-    select.appendChild(option);
+    const optionSeeker = document.createElement('option');
+    optionSeeker.value = index;
+    optionSeeker.textContent = nakshatra.name;
+    seekerSelect.appendChild(optionSeeker);
+    const optionPartner = document.createElement('option');
+    optionPartner.value = index;
+    optionPartner.textContent = nakshatra.name;
+    partnerSelect.appendChild(optionPartner);
 });
 
-// Event listener for Nakshatra selection
-select.addEventListener('change', function() {
-    const selectedIndex = parseInt(this.value);
-    if (isNaN(selectedIndex)) {
-        document.getElementById('compatibility-list').classList.add('hidden');
-        document.getElementById('suitability').classList.add('hidden');
+// Update insights when selections change
+function updateInsights() {
+    const seekerIndex = parseInt(seekerSelect.value);
+    const partnerIndex = parseInt(partnerSelect.value);
+    if (isNaN(seekerIndex) || isNaN(partnerIndex)) {
+        document.getElementById('results').classList.add('hidden');
         return;
     }
 
-    const selectedNakshatra = nakshatras[selectedIndex];
-    const selectedYoni = selectedNakshatra.yoni;
+    const seekerNakshatra = nakshatras[seekerIndex];
+    const partnerNakshatra = nakshatras[partnerIndex];
+    const compatibility = getCompatibility(seekerNakshatra.yoni, partnerNakshatra.yoni);
 
-    // Generate compatibility list
-    const compatibilityList = document.querySelector('#compatibility-list ul');
-    compatibilityList.innerHTML = '';
-    nakshatras.forEach(nakshatra => {
-        const compatibility = getCompatibility(selectedYoni, nakshatra.yoni);
-        const li = document.createElement('li');
-        li.textContent = `${nakshatra.name}: ${compatibility}%`;
-        li.className = compatibility === 100 ? 'text-green-600' : 'text-yellow-600';
-        compatibilityList.appendChild(li);
-    });
-    document.getElementById('compatibility-list').classList.remove('hidden');
+    // Get current astrological data
+    const { currentNakshatraIndex, isFavorableTithi, isFavorableDay, isWaxingMoon } = getCurrentAstroData();
 
-    // Calculate dating suitability
-    const isFavorableTara = getTaraBala(selectedIndex, currentNakshatraIndex);
-    const score = (
-        (isFavorableTara ? 1 : 0) * 0.4 + 
-        (isFavorableTithi ? 1 : 0) * 0.2 + 
-        (isFavorableDay ? 1 : 0) * 0.2 + 
-        (isWaxingMoon ? 1 : 0) * 0.1
-    );
-    const percentage = Math.round(score * 100);
-    let rating = '';
-    let colorClass = '';
-    if (percentage > 70) {
-        rating = 'Highly Favorable';
-        colorClass = 'text-green-600';
-    } else if (percentage >= 50) {
-        rating = 'Moderately Favorable';
-        colorClass = 'text-yellow-600';
-    } else {
-        rating = 'Not Favorable';
-        colorClass = 'text-red-600';
+    // Calculate factors
+    const seekerTaraPosition = getTaraPosition(seekerIndex, currentNakshatraIndex);
+    const safePeriod = isFavorableTara(seekerTaraPosition);
+    const datingInterest = isFavorableDay;
+    const partnerConsent = isFavorableTithi;
+    const fertileStatus = isWaxingMoon;
+    const isHighCompatibility = compatibility > 75;
+
+    // Calculate confidence score
+    const factors = [isHighCompatibility, safePeriod, datingInterest, partnerConsent, fertileStatus];
+    const favorableCount = factors.filter(Boolean).length;
+    const confidenceScore = (favorableCount / 5) * 100;
+
+    // Determine who should initiate
+    let engageSuggestion = '';
+    if (confidenceScore > 70) {
+        const seekerScore = getTaraScore(seekerTaraPosition);
+        const partnerTaraPosition = getTaraPosition(partnerIndex, currentNakshatraIndex);
+        const partnerScore = getTaraScore(partnerTaraPosition);
+        engageSuggestion = seekerScore >= partnerScore ? 'You (Seeker) should initiate.' : 'Partner should initiate.';
     }
 
-    const suitabilityText = document.getElementById('suitability-text');
-    suitabilityText.textContent = `${rating} (${percentage}%)`;
-    suitabilityText.className = `text-lg ${colorClass}`;
-    document.getElementById('suitability').classList.remove('hidden');
-});
+    // Display results
+    document.getElementById('compatibility').textContent = `Compatibility: ${compatibility}%`;
+    const factorsList = document.getElementById('factors');
+    factorsList.innerHTML = '';
+    ['High Compatibility (>75%)', 'Safe Period', 'Dating Interest', 'Partner/Guardian Consent', 'Fertile Status'].forEach((factor, i) => {
+        const li = document.createElement('li');
+        li.textContent = `${factor}: ${factors[i] ? 'Yes' : 'No'}`;
+        li.className = factors[i] ? 'text-green-600' : 'text-red-600';
+        factorsList.appendChild(li);
+    });
+    const confidenceText = document.getElementById('confidence');
+    confidenceText.textContent = confidenceScore > 70 ? `Best Time to Engage - ${engageSuggestion}` : 'Not the best time—wait for better conditions.';
+    confidenceText.className = confidenceScore > 70 ? 'text-green-600' : 'text-red-600';
+    document.getElementById('results').classList.remove('hidden');
+}
+
+// Add event listeners
+seekerSelect.addEventListener('change', updateInsights);
+partnerSelect.addEventListener('change', updateInsights);
+
+// Initial update (optional, if pre-selected)
+updateInsights();
