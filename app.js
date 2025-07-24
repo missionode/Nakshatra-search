@@ -1,92 +1,108 @@
-// script.js
-
-// Nakshatra Data with Malayalam prefix
-const nakshatraData = [
-  { name: "Ashwini", malayalam: "അശ്വതി" },
-  { name: "Bharani", malayalam: "ഭരണി" },
-  { name: "Krittika", malayalam: "കാർത്തിക" },
-  { name: "Rohini", malayalam: "റോഹിണി" },
-  { name: "Mrigashira", malayalam: "മകം" },
-  { name: "Ardra", malayalam: "തിരുവാതിര" },
-  { name: "Punarvasu", malayalam: "പുണർതം" },
-  { name: "Pushya", malayalam: "പൂയം" },
-  { name: "Ashlesha", malayalam: "ആയില്യം" },
-  { name: "Magha", malayalam: "മകം" },
-  { name: "Purva Phalguni", malayalam: "പൂരം" },
-  { name: "Uttara Phalguni", malayalam: "ഉത്രം" },
-  { name: "Hasta", malayalam: "അസ്ഥം" },
-  { name: "Chitra", malayalam: "ചിത്തിര" },
-  { name: "Swati", malayalam: "ചോതി" },
-  { name: "Vishakha", malayalam: "വിശാഖം" },
-  { name: "Anuradha", malayalam: "അനിഴം" },
-  { name: "Jyeshtha", malayalam: "തൃക്കേട്ട" },
-  { name: "Mula", malayalam: "മൂലം" },
-  { name: "Purva Ashadha", malayalam: "പൂർവഷാഡ" },
-  { name: "Uttara Ashadha", malayalam: "ഉത്തരഷാഡ" },
-  { name: "Shravana", malayalam: "തിരുവോണം" },
-  { name: "Dhanishta", malayalam: "അവിട്ടം" },
-  { name: "Shatabhisha", malayalam: "ചതയം" },
-  { name: "Purva Bhadrapada", malayalam: "പൂർവപ്രോഷഠപാദം" },
-  { name: "Uttara Bhadrapada", malayalam: "ഉത്തറപ്രോഷഠപാദം" },
-  { name: "Revati", malayalam: "രേവതി" }
+// List of 27 Nakshatras with indices and Yoni animals
+const nakshatras = [
+    { name: 'Ashwini', index: 0, yoni: 'Horse' },
+    { name: 'Bharani', index: 1, yoni: 'Elephant' },
+    { name: 'Krittika', index: 2, yoni: 'Goat' },
+    { name: 'Rohini', index: 3, yoni: 'Serpent' },
+    { name: 'Mrigashira', index: 4, yoni: 'Serpent' },
+    { name: 'Ardra', index: 5, yoni: 'Dog' },
+    { name: 'Punarvasu', index: 6, yoni: 'Cat' },
+    { name: 'Pushya', index: 7, yoni: 'Goat' },
+    { name: 'Ashlesha', index: 8, yoni: 'Cat' },
+    { name: 'Magha', index: 9, yoni: 'Rat' },
+    { name: 'Purva Phalguni', index: 10, yoni: 'Rat' },
+    { name: 'Uttara Phalguni', index: 11, yoni: 'Cow' },
+    { name: 'Hasta', index: 12, yoni: 'Buffalo' },
+    { name: 'Chitra', index: 13, yoni: 'Tiger' },
+    { name: 'Swati', index: 14, yoni: 'Buffalo' },
+    { name: 'Vishakha', index: 15, yoni: 'Tiger' },
+    { name: 'Anuradha', index: 16, yoni: 'Deer' },
+    { name: 'Jyeshtha', index: 17, yoni: 'Deer' },
+    { name: 'Mula', index: 18, yoni: 'Dog' },
+    { name: 'Purva Ashadha', index: 19, yoni: 'Monkey' },
+    { name: 'Uttara Ashadha', index: 20, yoni: 'Mongoose' },
+    { name: 'Shravana', index: 21, yoni: 'Monkey' },
+    { name: 'Dhanishta', index: 22, yoni: 'Lion' },
+    { name: 'Shatabhisha', index: 23, yoni: 'Horse' },
+    { name: 'Purva Bhadrapada', index: 24, yoni: 'Lion' },
+    { name: 'Uttara Bhadrapada', index: 25, yoni: 'Cow' },
+    { name: 'Revati', index: 26, yoni: 'Elephant' }
 ];
 
-function getTodayNakshatra() {
-  const today = new Date();
-  const seed = today.getFullYear() * 10000 + (today.getMonth() + 1) * 100 + today.getDate();
-  const index = seed % 27;
-  return nakshatraData[index];
+// Current astrological data (hypothetical for July 25, 2025, 04:53 AM IST)
+const currentNakshatraIndex = 10; // Purva Phalguni
+const isFavorableTithi = true;    // Shukla Dwitiya
+const isFavorableDay = true;      // Friday
+const isWaxingMoon = true;        // Waxing phase
+
+// Function to calculate Tara Bala (favorable if Sampat, Kshema, Sadhana, Mitra, Parama Mitra)
+function getTaraBala(selectedIndex, currentIndex) {
+    const diff = (currentIndex - selectedIndex + 27) % 9;
+    return [2, 4, 6, 8, 0].includes(diff); // Favorable Tara positions
 }
 
-function calculateResults(todayNakshatra, referenceNakshatra) {
-  const results = [];
-
-  if (todayNakshatra.name !== referenceNakshatra.name) {
-    const safe = (todayNakshatra.name.length + referenceNakshatra.name.length) % 2 === 0;
-    const dating = (todayNakshatra.name.charCodeAt(0) % 3) === (referenceNakshatra.name.charCodeAt(0) % 3);
-    const consent = (todayNakshatra.name.length % 2) === 1 && (referenceNakshatra.name.length % 2) === 1;
-    const fertility = (todayNakshatra.name.charCodeAt(1) + referenceNakshatra.name.charCodeAt(1)) % 5 > 2;
-
-    if (safe) results.push("🛡️ Safety Period: Yes");
-    if (dating) results.push("🌱 Dating Interest: Yes");
-    if (consent) results.push("💖 Consent: Yes");
-    if (fertility) results.push("🧬 Fertility Chance: High");
-  }
-
-  return results;
+// Function to calculate Yoni compatibility (simplified)
+function getCompatibility(selectedYoni, otherYoni) {
+    return selectedYoni === otherYoni ? 100 : 50; // 100% if same Yoni, 50% otherwise
 }
 
-function renderResults() {
-  const select = document.getElementById("referenceSelect");
-  const referenceName = select.value;
-  const referenceNakshatra = nakshatraData.find(n => n.name === referenceName);
+// Populate the dropdown with Nakshatras
+const select = document.getElementById('janma-nakshatra');
+nakshatras.forEach((nakshatra, index) => {
+    const option = document.createElement('option');
+    option.value = index;
+    option.textContent = nakshatra.name;
+    select.appendChild(option);
+});
 
-  const todayNakshatra = getTodayNakshatra();
-  const results = calculateResults(todayNakshatra, referenceNakshatra);
+// Event listener for Nakshatra selection
+select.addEventListener('change', function() {
+    const selectedIndex = parseInt(this.value);
+    if (isNaN(selectedIndex)) {
+        document.getElementById('compatibility-list').classList.add('hidden');
+        document.getElementById('suitability').classList.add('hidden');
+        return;
+    }
 
-  const display = document.getElementById("results");
-  display.innerHTML = "";
+    const selectedNakshatra = nakshatras[selectedIndex];
+    const selectedYoni = selectedNakshatra.yoni;
 
-  const heading = document.createElement("h2");
-  heading.textContent = `Today's Nakshatra: ${todayNakshatra.malayalam} (${todayNakshatra.name})`;
-  display.appendChild(heading);
-
-  if (results.length === 0) {
-    const noResults = document.createElement("p");
-    noResults.textContent = "No positive indications today.";
-    display.appendChild(noResults);
-  } else {
-    const ul = document.createElement("ul");
-    results.forEach(result => {
-      const li = document.createElement("li");
-      li.textContent = result;
-      ul.appendChild(li);
+    // Generate compatibility list
+    const compatibilityList = document.querySelector('#compatibility-list ul');
+    compatibilityList.innerHTML = '';
+    nakshatras.forEach(nakshatra => {
+        const compatibility = getCompatibility(selectedYoni, nakshatra.yoni);
+        const li = document.createElement('li');
+        li.textContent = `${nakshatra.name}: ${compatibility}%`;
+        li.className = compatibility === 100 ? 'text-green-600' : 'text-yellow-600';
+        compatibilityList.appendChild(li);
     });
-    display.appendChild(ul);
-  }
-}
+    document.getElementById('compatibility-list').classList.remove('hidden');
 
-document.getElementById("referenceSelect").addEventListener("change", renderResults);
+    // Calculate dating suitability
+    const isFavorableTara = getTaraBala(selectedIndex, currentNakshatraIndex);
+    const score = (
+        (isFavorableTara ? 1 : 0) * 0.4 + 
+        (isFavorableTithi ? 1 : 0) * 0.2 + 
+        (isFavorableDay ? 1 : 0) * 0.2 + 
+        (isWaxingMoon ? 1 : 0) * 0.1
+    );
+    const percentage = Math.round(score * 100);
+    let rating = '';
+    let colorClass = '';
+    if (percentage > 70) {
+        rating = 'Highly Favorable';
+        colorClass = 'text-green-600';
+    } else if (percentage >= 50) {
+        rating = 'Moderately Favorable';
+        colorClass = 'text-yellow-600';
+    } else {
+        rating = 'Not Favorable';
+        colorClass = 'text-red-600';
+    }
 
-// Initialize on load
-document.addEventListener("DOMContentLoaded", renderResults);
+    const suitabilityText = document.getElementById('suitability-text');
+    suitabilityText.textContent = `${rating} (${percentage}%)`;
+    suitabilityText.className = `text-lg ${colorClass}`;
+    document.getElementById('suitability').classList.remove('hidden');
+});
