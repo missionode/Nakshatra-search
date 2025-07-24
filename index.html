@@ -1,17 +1,24 @@
-
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Nakshatra Insights</title>
+  <title>Nakshatra Relationship Analyzer</title>
   <link rel="stylesheet" href="style.css" />
+  <link href="https://cdn.jsdelivr.net/npm/@mui/material@5.14.1/dist/material.min.css" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet" />
 </head>
+
 <body>
   <div class="container">
-    <h1>Nakshatra Insights for Today</h1>
-    <div id="results"></div>
+    <h1>Nakshatra Relationship Analyzer</h1>
+    <label for="referenceNakshatra" class="label">Select Reference Nakshatra:</label>
+    <select id="referenceNakshatra" class="dropdown"></select>
+    <div id="results" class="results"></div>
   </div>
-  <script src="app.js"></script>
+
+  <script src="script.js"></script>
 </body>
+
 </html>
