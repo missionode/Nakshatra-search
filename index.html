@@ -1,18 +1,39 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Nakshatra Insight</title>
-  <link rel="stylesheet" href="style.css" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nakshatra Compatibility & Dating Suitability</title>
+    <!-- Tailwind CSS CDN -->
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
 </head>
-<body>
-  <div class="container">
-    <h1 class="title">Nakshatra Relationship Insights</h1>
-    <label for="refNakshatra">Select Reference Nakshatra:</label>
-    <select id="refNakshatra"></select>
-    <div id="results" class="results"></div>
-  </div>
-  <script src="script.js"></script>
+<body class="bg-gray-100 min-h-screen flex items-center justify-center p-4">
+    <div class="max-w-lg w-full bg-white p-6 rounded-lg shadow-lg">
+        <h1 class="text-2xl font-bold text-gray-800 mb-4 text-center">Nakshatra Compatibility</h1>
+        
+        <!-- Nakshatra Selection -->
+        <label for="janma-nakshatra" class="block text-sm font-medium text-gray-700 mb-2">
+            Select Your Janma Nakshatra:
+        </label>
+        <select id="janma-nakshatra" class="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 mb-4">
+            <option value="">-- Select --</option>
+            <!-- Nakshatras will be populated via JS -->
+        </select>
+
+        <!-- Compatibility List -->
+        <div id="compatibility-list" class="mb-6 hidden">
+            <h2 class="text-xl font-semibold text-gray-800 mb-2">Compatibility with Other Nakshatras</h2>
+            <ul class="list-disc pl-5 space-y-1"></ul>
+            <p class="text-sm text-gray-600 mt-2">*Compatibility is based on Yoni Kuta (animal symbol matching).</p>
+        </div>
+
+        <!-- Dating Suitability -->
+        <div id="suitability" class="mb-6 hidden">
+            <h2 class="text-xl font-semibold text-gray-800 mb-2">Current Dating Suitability</h2>
+            <p id="suitability-text" class="text-lg"></p>
+            <p class="text-sm text-gray-600 mt-2">*Based on astrological conditions for July 25, 2025, 04:53 AM IST, considering Tara Bala, Tithi, day, and Moon phase.</p>
+        </div>
+    </div>
+    <script src="app.js"></script>
 </body>
 </html>
