@@ -3,35 +3,25 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Nakshatra Dating Insights</title>
+    <title>Nakshatra Compatibility</title>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
 </head>
 <body class="bg-gray-100 min-h-screen flex items-center justify-center p-4">
     <div class="max-w-lg w-full bg-white p-6 rounded-lg shadow-lg">
-        <h1 class="text-2xl font-bold text-gray-800 mb-4 text-center">Nakshatra Dating Insights</h1>
+        <h1 class="text-2xl font-bold text-gray-800 mb-4 text-center">Nakshatra Compatibility</h1>
         
         <!-- Seeker Nakshatra Selection -->
         <label for="seeker-nakshatra" class="block text-sm font-medium text-gray-700 mb-2">
-            Select Your Nakshatra (Seeker):
+            Select Your Nakshatra:
         </label>
         <select id="seeker-nakshatra" class="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 mb-4">
             <option value="">-- Select --</option>
         </select>
 
-        <!-- Partner Nakshatra Selection -->
-        <label for="partner-nakshatra" class="block text-sm font-medium text-gray-700 mb-2">
-            Select Partner's Nakshatra:
-        </label>
-        <select id="partner-nakshatra" class="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 mb-4">
-            <option value="">-- Select --</option>
-        </select>
-
-        <!-- Results -->
-        <div id="results" class="hidden">
-            <h2 class="text-xl font-semibold text-gray-800 mb-2">Dating Insights</h2>
-            <p id="compatibility" class="mb-2"></p>
-            <ul id="factors" class="list-disc pl-5 space-y-1 mb-4"></ul>
-            <p id="confidence" class="text-lg font-medium"></p>
+        <!-- Compatibility List -->
+        <div id="compatibility-list" class="hidden mb-6">
+            <h2 class="text-xl font-semibold text-gray-800 mb-2">Compatible Nakshatras</h2>
+            <ul class="list-disc pl-5 space-y-1"></ul>
         </div>
     </div>
     <script src="app.js"></script>
