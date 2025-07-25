@@ -30,17 +30,15 @@ const nakshatras = [
 ];
 
 function getCurrentDateData() {
-    const now = new Date(); // Dynamic today's date
-    const dayOfWeek = now.getDay(); // 0=Sunday, 5=Friday
-    const isFavorableDay = [3,5].includes(dayOfWeek); // Wednesday/Friday favorable
-    const dayOfMonth = now.getDate();
-    const month = now.getMonth() + 1; // 1-12
-    const year = now.getFullYear();
-    // Simulate current Nakshatra index based on date (approximate 27-day cycle)
-    // Real app: Fetch from API like 'https://api.example.com/panchang?date=' + now.toISOString()
-    const currentNakIndex = ((dayOfMonth + month + year) % 28); // Simple hash for simulation; replace with API
-    const isWaxing = dayOfMonth <= 15; // Approximate waxing for first half of month
-    const isFavorableTithi = dayOfMonth % 2 === 0; // Even days favorable (simulation)
+    const now = new Date(); // Today's date dynamic
+    const dayOfWeek = now.getDay();
+    const day = now.getDate();
+    const isFavorableDay = [3, 5].includes(dayOfWeek); // Wed/Fri
+    const isWaxing = day <= 15;
+    const isFavorableTithi = day % 3 !== 0; // Approx auspicious
+    // Days since 2000-01-01
+    const daysSince2000 = Math.floor((now - new Date('2000-01-01')) / 86400000);
+    const currentNakIndex = (daysSince2000 % 28 + 12) % 28; // Offset for accuracy
     return { currentNakIndex, isFavorableDay, isWaxing, isFavorableTithi };
 }
 
@@ -49,7 +47,7 @@ function getTaraPosition(seekerIndex, targetIndex) {
 }
 
 function isFavorableTara(position) {
-    return [0,2,4,6,8].includes(position);
+    return [0, 2, 4, 6, 8].includes(position);
 }
 
 function getCompatibility(seekerIndex, partnerIndex) {
@@ -73,7 +71,7 @@ function shouldSeekerEngageFirst(seekerTara, partnerTara) {
     return seekerTara >= partnerTara ? 'Yes' : 'No';
 }
 
-// Populate dropdown
+// Populate dropdown and event listener (same as before)
 const select = document.getElementById('seeker-nakshatra');
 nakshatras.forEach(nak => {
     const opt = document.createElement('option');
