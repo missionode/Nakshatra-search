@@ -3,18 +3,286 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Nakshatra Dating Planner</title>
-    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <title>Cycle Insights</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        /* Custom animations */
+        @keyframes ripple {
+            0% { transform: scale(0); opacity: 0.5; }
+            100% { transform: scale(4); opacity: 0; }
+        }
+        @keyframes slideIn {
+            from { transform: translateY(100%); }
+            to { transform: translateY(0); }
+        }
+        .ripple-effect {
+            position: relative;
+            overflow: hidden;
+        }
+        .ripple-effect::after {
+            content: '';
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            background: rgba(255, 255, 255, 0.5);
+            border-radius: 50%;
+            transform: scale(0);
+            animation: ripple 0.6s linear;
+            pointer-events: none;
+        }
+        .modal-slide {
+            animation: slideIn 0.3s ease-in-out;
+        }
+        /* Skeleton loading */
+        .skeleton {
+            background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+            background-size: 200% 100%;
+            animation: skeleton-loading 1.5s infinite;
+        }
+        @keyframes skeleton-loading {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+    </style>
 </head>
-<body class="bg-gray-100 min-h-screen flex items-center justify-center p-4">
-    <div class="max-w-lg w-full bg-white p-6 rounded-lg shadow-lg">
-        <h1 class="text-2xl font-bold text-gray-800 mb-4 text-center">Nakshatra Dating Insights</h1>
-        <label for="seeker-nakshatra" class="block text-sm font-medium text-gray-700 mb-2">Select Your Nakshatra:</label>
-        <select id="seeker-nakshatra" class="w-full p-2 border border-gray-300 rounded-md mb-4">
-            <option value="">-- Select --</option>
-        </select>
-        <div id="results" class="space-y-4"></div>
+<body class="bg-gradient-to-b from-purple-100 to-white font-sans">
+    <!-- Input Modal -->
+    <div id="inputModal" class="fixed inset-0 bg-white z-50 flex flex-col justify-center p-6">
+        <h1 class="text-2xl font-bold text-purple-800 mb-6 text-center">Cycle Insights</h1>
+        <form id="dobForm" class="space-y-4">
+            <div>
+                <label for="dob" class="block text-sm font-medium text-gray-700">Your Date of Birth</label>
+                <input type="date" id="dob" max="2025-07-25" required
+                    class="mt-1 block w-full p-2 border border-gray-300 rounded-md focus:ring-purple-500 focus:border-purple-500">
+            </div>
+            <div>
+                <label for="name" class="block text-sm font-medium text-gray-700">Your Name (Optional)</label>
+                <input type="text" id="name" placeholder="Enter your name"
+                    class="mt-1 block w-full p-2 border border-gray-300 rounded-md focus:ring-purple-500 focus:border-purple-500">
+            </div>
+            <button type="submit"
+                class="w-full bg-purple-600 text-white py-2 px-4 rounded-md hover:bg-purple-700 transition ripple-effect">Get Insights</button>
+        </form>
+        <p class="mt-4 text-xs text-gray-500 text-center">Based on research patterns; consult a doctor for personalized advice.</p>
     </div>
-    <script src="app.js"></script>
+
+    <!-- Main Dashboard -->
+    <div id="dashboard" class="hidden p-6">
+        <header class="mb-6">
+            <h1 id="greeting" class="text-2xl font-bold text-purple-800"></h1>
+            <p class="text-sm text-gray-600">Week of July 25 - July 31, 2025</p>
+        </header>
+
+        <!-- Timeline -->
+        <div class="overflow-x-auto flex space-x-4 pb-4 snap-x snap-mandatory">
+            <div id="timeline" class="flex space-x-4">
+                <!-- Day cards populated by JS -->
+            </div>
+        </div>
+
+        <!-- Metrics Overview -->
+        <div id="metrics" class="grid grid-cols-2 gap-4 mb-6">
+            <!-- Metric cards populated by JS -->
+        </div>
+
+        <!-- Daily Tips -->
+        <div id="tips" class="bg-white p-4 rounded-lg shadow">
+            <h2 class="text-lg font-semibold text-purple-800">Today's Tips</h2>
+            <ul id="tipsList" class="list-disc list-inside text-gray-700"></ul>
+        </div>
+    </div>
+
+    <!-- Daily Detail Modal -->
+    <div id="detailModal" class="hidden fixed inset-0 bg-white z-50 p-6 overflow-y-auto modal-slide">
+        <button id="closeModal" class="text-purple-600 mb-4">← Back</button>
+        <h2 id="detailDate" class="text-2xl font-bold text-purple-800"></h2>
+        <div id="detailContent" class="space-y-4">
+            <!-- Details populated by JS -->
+        </div>
+        <canvas id="trendChart" class="mt-4"></canvas>
+    </div>
+
+    <script>
+        // Helper Functions
+        function calculateAge(dob) {
+            const today = new Date('2025-07-25');
+            const birthDate = new Date(dob);
+            return Math.floor((today - birthDate) / (365.25 * 24 * 60 * 60 * 1000));
+        }
+
+        function getCycleDay(dob, cycleLength) {
+            const menarcheAge = dob.includes('06') || dob.includes('07') || dob.includes('08') ? 12.2 :
+                                (dob.includes('03') || dob.includes('04') || dob.includes('05') ||
+                                 dob.includes('09') || dob.includes('10') || dob.includes('11')) ? 12.5 : 12.8;
+            const menarcheDate = new Date(new Date(dob).setFullYear(new Date(dob).getFullYear() + menarcheAge));
+            const daysSinceMenarche = Math.floor((new Date('2025-07-25') - menarcheDate) / (24 * 60 * 60 * 1000));
+            return daysSinceMenarche % cycleLength || 1;
+        }
+
+        function calculateFertilityScore(dob) {
+            const age = calculateAge(dob);
+            const AF = age < 20 ? 0.8 : age <= 30 ? 1.0 : age <= 35 ? 0.85 : age <= 40 ? 0.6 : age <= 45 ? 0.3 : 0.1;
+            const SBF = (dob.includes('06') || dob.includes('07') || dob.includes('08')) ? 1.0 :
+                        (dob.includes('03') || dob.includes('04') || dob.includes('05') ||
+                         dob.includes('09') || dob.includes('10') || dob.includes('11')) ? 0.8 : 0.95;
+            const CRF = SBF === 0.8 ? 0.8 : 1.0;
+            return Math.min((AF * SBF * CRF) * 100, 100);
+        }
+
+        function getCyclePhase(day, cycleLength, age) {
+            if (age > 45) return 'post-menopause';
+            if (day <= 5) return 'menstrual';
+            if (day <= 14) return 'follicular';
+            if (day <= 16) return 'ovulatory';
+            return 'luteal';
+        }
+
+        function calculateScores(fs, phase, isHighRisk) {
+            const CPF_mood = phase === 'ovulatory' ? 1.2 : phase === 'follicular' ? 1.0 :
+                             phase === 'luteal' ? 0.7 : phase === 'menstrual' ? 0.5 : 0.8;
+            const CPF_pleasure = phase === 'ovulatory' ? 1.2 : phase === 'follicular' ? 0.9 :
+                                 phase === 'luteal' ? 0.7 : phase === 'menstrual' ? 0.6 : 0.5;
+            const HSF = isHighRisk ? 0.7 : 1.0;
+            const MS = Math.min((fs * CPF_mood * HSF), 100);
+            const CSS = Math.min((fs * CPF_mood * HSF) * 0.5 + 50, 100);
+            const PSI = Math.min((fs * CPF_pleasure * HSF), 100);
+            return { MS, CSS, PSI };
+        }
+
+        function getTips(ms, css, psi) {
+            const mood = ms >= 80 ? 'Positive 😊' : ms >= 50 ? 'Neutral 😐' : 'Negative 😔';
+            const comm = css > 50 ? 'Talker 🗣️' : 'Listener 👂';
+            const pleasure = psi >= 80 ? 'High 🎉' : psi >= 50 ? 'Moderate 🌟' : 'Low 🛌';
+            return [
+                `Mood: ${mood} - ${ms >= 80 ? 'Great day for socializing!' : ms >= 50 ? 'Balanced vibe, try relaxing.' : 'Self-care time!'}`,
+                `Style: ${comm} - ${css > 50 ? 'Share your thoughts!' : 'Perfect for listening and reflecting.'}`,
+                `Pleasure: ${pleasure} - ${psi >= 80 ? 'Try a fun activity like a date night!' : psi >= 50 ? 'Enjoy a cozy hobby.' : 'Rest and recharge.'}`
+            ];
+        }
+
+        // DOM Manipulation
+        document.getElementById('dobForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const dob = document.getElementById('dob').value;
+            const name = document.getElementById('name').value || 'You';
+            if (!dob || new Date(dob) > new Date('2025-07-25')) {
+                alert('Please enter a valid birth date.');
+                return;
+            }
+
+            document.getElementById('inputModal').classList.add('hidden');
+            document.getElementById('dashboard').classList.remove('hidden');
+            document.getElementById('greeting').textContent = `Insights for ${name}'s Week`;
+
+            const cycleLength = (dob.includes('03') || dob.includes('04') || dob.includes('05') ||
+                                 dob.includes('09') || dob.includes('10') || dob.includes('11')) ? 35 : 28;
+            const isHighRisk = cycleLength === 35;
+            const fs = calculateFertilityScore(dob);
+            const age = calculateAge(dob);
+
+            // Populate Timeline
+            const timeline = document.getElementById('timeline');
+            const metrics = document.getElementById('metrics');
+            const tipsList = document.getElementById('tipsList');
+            const startDate = new Date('2025-07-25');
+            for (let i = 0; i < 7; i++) {
+                const date = new Date(startDate);
+                date.setDate(startDate.getDate() + i);
+                const day = getCycleDay(dob, cycleLength) + i > cycleLength ? (getCycleDay(dob, cycleLength) + i) % cycleLength : getCycleDay(dob, cycleLength) + i;
+                const phase = getCyclePhase(day, cycleLength, age);
+                const { MS, CSS, PSI } = calculateScores(fs, phase, isHighRisk);
+
+                // Timeline Card
+                const card = document.createElement('div');
+                card.className = 'snap-center bg-white p-4 rounded-lg shadow w-40 flex-shrink-0 cursor-pointer';
+                card.innerHTML = `
+                    <h3 class="text-sm font-semibold text-purple-800">${date.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })}</h3>
+                    <p class="text-xs text-gray-600">Mood: ${MS >= 80 ? '😊' : MS >= 50 ? '😐' : '😔'}</p>
+                    <p class="text-xs text-gray-600">Fertility: ${Math.round(fs)}%</p>
+                `;
+                card.addEventListener('click', () => showDetailModal(date, fs, phase, MS, CSS, PSI));
+                timeline.appendChild(card);
+
+                // Metrics (Today only)
+                if (i === 0) {
+                    metrics.innerHTML = `
+                        <div class="bg-green-100 p-4 rounded-lg">
+                            <p class="text-sm font-medium text-green-800">Fertility</p>
+                            <p class="text-lg font-bold">${Math.round(fs)}%</p>
+                        </div>
+                        <div class="bg-blue-100 p-4 rounded-lg">
+                            <p class="text-sm font-medium text-blue-800">Mood</p>
+                            <p class="text-lg font-bold">${MS >= 80 ? 'Positive 😊' : MS >= 50 ? 'Neutral 😐' : 'Negative 😔'}</p>
+                        </div>
+                        <div class="bg-yellow-100 p-4 rounded-lg">
+                            <p class="text-sm font-medium text-yellow-800">Style</p>
+                            <p class="text-lg font-bold">${CSS > 50 ? 'Talker 🗣️' : 'Listener 👂'}</p>
+                        </div>
+                        <div class="bg-pink-100 p-4 rounded-lg">
+                            <p class="text-sm font-medium text-pink-800">Pleasure</p>
+                            <p class="text-lg font-bold">${PSI >= 80 ? 'High 🎉' : PSI >= 50 ? 'Moderate 🌟' : 'Low 🛌'}</p>
+                        </div>
+                    `;
+                    tipsList.innerHTML = getTips(MS, CSS, PSI).map(tip => `<li>${tip}</li>`).join('');
+                }
+            }
+        });
+
+        function showDetailModal(date, fs, phase, ms, css, psi) {
+            document.getElementById('dashboard').classList.add('hidden');
+            document.getElementById('detailModal').classList.remove('hidden');
+            document.getElementById('detailDate').textContent = date.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' });
+            document.getElementById('detailContent').innerHTML = `
+                <div class="bg-white p-4 rounded-lg shadow">
+                    <h3 class="text-lg font-semibold text-purple-800">Fertility Score</h3>
+                    <p class="text-2xl font-bold text-green-600">${Math.round(fs)}%</p>
+                    <p class="text-sm text-gray-600">Likelihood of ovulation based on age and birth season.</p>
+                </div>
+                <div class="bg-white p-4 rounded-lg shadow">
+                    <h3 class="text-lg font-semibold text-purple-800">Mood</h3>
+                    <p class="text-2xl font-bold text-blue-600">${ms >= 80 ? 'Positive 😊' : ms >= 50 ? 'Neutral 😐' : 'Negative 😔'}</p>
+                    <p class="text-sm text-gray-600">${ms >= 80 ? 'Feeling great!' : ms >= 50 ? 'Stable and balanced.' : 'Time for self-care.'}</p>
+                </div>
+                <div class="bg-white p-4 rounded-lg shadow">
+                    <h3 class="text-lg font-semibold text-purple-800">Communication Style</h3>
+                    <p class="text-2xl font-bold text-yellow-600">${css > 50 ? 'Talker 🗣️' : 'Listener 👂'}</p>
+                    <p class="text-sm text-gray-600">${css > 50 ? 'Ready to share ideas!' : 'Great for listening and reflecting.'}</p>
+                </div>
+                <div class="bg-white p-4 rounded-lg shadow">
+                    <h3 class="text-lg font-semibold text-purple-800">Pleasure Seeking</h3>
+                    <p class="text-2xl font-bold text-pink-600">${psi >= 80 ? 'High 🎉' : psi >= 50 ? 'Moderate 🌟' : 'Low 🛌'}</p>
+                    <p class="text-sm text-gray-600">${psi >= 80 ? 'Perfect for fun activities!' : psi >= 50 ? 'Enjoy a cozy hobby.' : 'Rest and recharge.'}</p>
+                </div>
+            `;
+
+            // Trend Chart
+            const ctx = document.getElementById('trendChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: Array(7).fill().map((_, i) => {
+                        const d = new Date('2025-07-25');
+                        d.setDate(d.getDate() + i);
+                        return d.toLocaleDateString('en-US', { day: 'numeric', month: 'short' });
+                    }),
+                    datasets: [
+                        { label: 'Mood', data: Array(7).fill(ms), borderColor: '#2196F3', tension: 0.4 },
+                        { label: 'Pleasure', data: Array(7).fill(psi), borderColor: '#EC4899', tension: 0.4 }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    scales: { y: { beginAtZero: true, max: 100 } },
+                    plugins: { legend: { position: 'top' } }
+                }
+            });
+        }
+
+        document.getElementById('closeModal').addEventListener('click', () => {
+            document.getElementById('detailModal').classList.add('hidden');
+            document.getElementById('dashboard').classList.remove('hidden');
+        });
+    </script>
 </body>
 </html>
