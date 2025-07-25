@@ -29,16 +29,26 @@ const nakshatras = [
     { name: 'Revati', malayalam: 'രേവതി', index: 27, ruling: 'Mercury', element: 'Water' }
 ];
 
+function isWaxing(date) {
+    const knownNewMoon = new Date(2000, 0, 6, 18, 14, 0); // Reference new moon
+    const seconds = (date - knownNewMoon) / 1000;
+    const days = seconds / 86400;
+    const moonCycle = 29.530587981;
+    const phase = (days % moonCycle) / moonCycle;
+    const degrees = phase * 360;
+    return degrees < 180;
+}
+
 function getCurrentDateData() {
-    const now = new Date(); // Dynamic current date and time
+    const now = new Date(); // Dynamic current date
     const dayOfWeek = now.getDay();
     const day = now.getDate();
     const isFavorableDay = ['Venus', 'Mars'].includes(nakshatras.find(n => n.index === ((day + now.getMonth() + now.getFullYear()) % 28)).ruling) || [3, 5].includes(dayOfWeek);
-    const isWaxing = day <= 15;
+    const waxing = isWaxing(now);
     const isFavorableTithi = ['Jupiter', 'Saturn'].includes(nakshatras.find(n => n.index === ((day + now.getMonth() + now.getFullYear()) % 28)).ruling) || (day % 3 !== 0);
     const daysSince2000 = Math.floor((now - new Date('2000-01-01')) / 86400000);
     const currentNakIndex = (daysSince2000 % 28 + 12) % 28; // Calibrated
-    return { currentNakIndex, isFavorableDay, isWaxing, isFavorableTithi };
+    return { currentNakIndex, isFavorableDay, waxing, isFavorableTithi, now };
 }
 
 function getTaraPosition(seekerIndex, targetIndex) {
@@ -53,17 +63,30 @@ function getCompatibility(seekerIndex, partnerIndex) {
     return Math.round(100 - (Math.abs(seekerIndex - partnerIndex) / 28 * 100));
 }
 
-function findNextAuspiciousTime(currentIndex, seekerIndex, partnerIndex) {
-    const now = new Date();
-    for (let days = 1; days <= 7; days++) {
+function findNextAuspiciousTimes(currentIndex, seekerIndex, partnerIndex, currentDate) {
+    const times = [];
+    for (let days = 0; days <= 7; days++) { // Include today if future times available
         const futureIndex = (currentIndex + days) % 28;
         if (isFavorableTara(getTaraPosition(seekerIndex, futureIndex)) && isFavorableTara(getTaraPosition(partnerIndex, futureIndex))) {
-            const futureDate = new Date(now);
-            futureDate.setDate(now.getDate() + days);
-            return `${futureDate.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}, 7:00 PM local time`;
+            const futureDate = new Date(currentDate);
+            futureDate.setDate(currentDate.getDate() + days);
+            const dateStr = futureDate.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+            const hour = currentDate.getHours();
+            const suggestions = [];
+            if (days === 0) { // Today, exclude past
+                if (hour < 9) suggestions.push('9:00 AM - 11:00 AM');
+                if (hour < 16) suggestions.push('4:00 PM - 6:00 PM');
+                if (hour < 18) suggestions.push('6:00 PM - 8:00 PM');
+            } else { // Future days, full suggestions
+                suggestions.push('9:00 AM - 11:00 AM', '4:00 PM - 6:00 PM', '6:00 PM - 8:00 PM');
+            }
+            if (suggestions.length > 0) {
+                times.push(`${dateStr}: ${suggestions.join(', ')}`);
+            }
+            if (times.length >= 3) break; // Limit to 3 suggestions
         }
     }
-    return 'Within the next week';
+    return times.join('; ') || 'Within the next week';
 }
 
 function shouldSeekerEngageFirst(seekerTara, partnerTara) {
@@ -77,20 +100,20 @@ function getCompatibilityColor(compat) {
     return 'bg-red-500';
 }
 
-// Populate dropdown and set default to Rohini (index 3)
+// Populate dropdown and set default to Mula (index 18)
 const select = document.getElementById('seeker-nakshatra');
 nakshatras.forEach(nak => {
     const opt = document.createElement('option');
     opt.value = nak.index;
     opt.textContent = `${nak.name} (${nak.malayalam})`;
-    if (nak.index === 3) opt.selected = true; // Default to Rohini
+    if (nak.index === 18) opt.selected = true; // Default to Mula
     select.appendChild(opt);
 });
 
 // Update results on page load and change
 function updateResults() {
-    const seekerIndex = parseInt(select.value) || 3; // Default to Rohini
-    const { currentNakIndex, isFavorableDay, isWaxing, isFavorableTithi } = getCurrentDateData();
+    const seekerIndex = parseInt(select.value) || 18; // Default to Mula
+    const { currentNakIndex, isFavorableDay, waxing, isFavorableTithi, now } = getCurrentDateData();
     const results = document.getElementById('results');
     results.innerHTML = '';
     const data = nakshatras.map(partner => {
@@ -100,10 +123,10 @@ function updateResults() {
         const safe = isFavorableTara(seekerTara);
         const interest = isFavorableDay || ['Venus', 'Mars'].includes(partner.ruling);
         const consent = isFavorableTithi || ['Jupiter', 'Saturn'].includes(partner.ruling);
-        const fertile = isWaxing && ['Water', 'Earth'].includes(partner.element);
+        const fertile = waxing && ['Water', 'Earth'].includes(partner.element);
         const engageFirst = shouldSeekerEngageFirst(seekerTara, partnerTara);
-        const nextTime = findNextAuspiciousTime(currentNakIndex, seekerIndex, partner.index);
-        return { ...partner, compat, safe, interest, consent, fertile, engageFirst, nextTime };
+        const nextTimes = findNextAuspiciousTimes(currentNakIndex, seekerIndex, partner.index, now);
+        return { ...partner, compat, safe, interest, consent, fertile, engageFirst, nextTimes };
     }).sort((a, b) => b.compat - a.compat);
 
     data.forEach(item => {
@@ -120,7 +143,7 @@ function updateResults() {
                 <li>Partner/Guardian Consent: <span class="${item.consent ? 'text-green-600' : 'text-red-600'}">${item.consent ? 'Yes' : 'No'}</span></li>
                 <li>Fertile Status: <span class="${item.fertile ? 'text-green-600' : 'text-red-600'}">${item.fertile ? 'Yes' : 'No'}</span></li>
                 <li>Should Seeker Engage First: <span class="${item.engageFirst === 'Yes' ? 'text-green-600' : 'text-red-600'}">${item.engageFirst}</span></li>
-                <li>Next Auspicious Dating Time: ${item.nextTime}</li>
+                <li>Next Auspicious Dating Times: ${item.nextTimes}</li>
             </ul>
         `;
         results.appendChild(div);
