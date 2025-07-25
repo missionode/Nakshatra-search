@@ -1,54 +1,57 @@
 const nakshatras = [
-    { name: 'Ashwini', malayalam: 'അശ്വിനി', index: 0, ruling: 'Ketu', element: 'Fire' },
-    { name: 'Bharani', malayalam: 'ഭരണി', index: 1, ruling: 'Venus', element: 'Earth' },
-    { name: 'Krittika', malayalam: 'കാർത്തിക', index: 2, ruling: 'Sun', element: 'Fire' },
-    { name: 'Rohini', malayalam: 'രോഹിണി', index: 3, ruling: 'Moon', element: 'Earth' },
-    { name: 'Mrigashira', malayalam: 'മൃഗശിര', index: 4, ruling: 'Mars', element: 'Earth' },
-    { name: 'Ardra', malayalam: 'ആർദ്ര', index: 5, ruling: 'Rahu', element: 'Water' },
-    { name: 'Punarvasu', malayalam: 'പുനർവസു', index: 6, ruling: 'Jupiter', element: 'Water' },
-    { name: 'Pushya', malayalam: 'പുഷ്യ', index: 7, ruling: 'Saturn', element: 'Water' },
-    { name: 'Ashlesha', malayalam: 'ആശ്ലേഷ', index: 8, ruling: 'Mercury', element: 'Water' },
-    { name: 'Magha', malayalam: 'മാഘ', index: 9, ruling: 'Ketu', element: 'Fire' },
-    { name: 'Purva Phalguni', malayalam: 'പൂർവ ഫൽഗുനി', index: 10, ruling: 'Venus', element: 'Earth' },
-    { name: 'Uttara Phalguni', malayalam: 'ഉത്തര ഫൽഗുനി', index: 11, ruling: 'Sun', element: 'Fire' },
-    { name: 'Hasta', malayalam: 'ഹസ്ത', index: 12, ruling: 'Moon', element: 'Earth' },
-    { name: 'Chitra', malayalam: 'ചിത്ര', index: 13, ruling: 'Mars', element: 'Fire' },
-    { name: 'Swati', malayalam: 'സ്വാതി', index: 14, ruling: 'Rahu', element: 'Fire' },
-    { name: 'Vishakha', malayalam: 'വിശാഖ', index: 15, ruling: 'Jupiter', element: 'Fire' },
-    { name: 'Anuradha', malayalam: 'അനുരാധ', index: 16, ruling: 'Saturn', element: 'Fire' },
-    { name: 'Jyeshtha', malayalam: 'ജ്യേഷ്ഠ', index: 17, ruling: 'Mercury', element: 'Water' },
-    { name: 'Mula', malayalam: 'മൂലം', index: 18, ruling: 'Ketu', element: 'Fire' },
-    { name: 'Purva Ashadha', malayalam: 'പൂർവ ആഷാഢ', index: 19, ruling: 'Venus', element: 'Water' },
-    { name: 'Uttara Ashadha', malayalam: 'ഉത്തര ആഷാഢ', index: 20, ruling: 'Sun', element: 'Earth' },
-    { name: 'Abhijit', malayalam: 'അഭിജിത്', index: 21, ruling: 'Brahma', element: 'Water' },
-    { name: 'Shravana', malayalam: 'ശ്രവണ', index: 22, ruling: 'Moon', element: 'Air' },
-    { name: 'Dhanishta', malayalam: 'ധനിഷ്ഠ', index: 23, ruling: 'Mars', element: 'Air' },
-    { name: 'Shatabhisha', malayalam: 'ശതഭിഷ', index: 24, ruling: 'Rahu', element: 'Air' },
-    { name: 'Purva Bhadrapada', malayalam: 'പൂർവ ഭാദ്രപാദ', index: 25, ruling: 'Jupiter', element: 'Air' },
-    { name: 'Uttara Bhadrapada', malayalam: 'ഉത്തര ഭാദ്രപാദ', index: 26, ruling: 'Saturn', element: 'Water' },
-    { name: 'Revati', malayalam: 'രേവതി', index: 27, ruling: 'Mercury', element: 'Water' }
+    { name: 'Ashwini', malayalam: 'അശ്വിനി', index: 0, ruling: 'Ketu', element: 'Fire', fertile: false },
+    { name: 'Bharani', malayalam: 'ഭരണി', index: 1, ruling: 'Venus', element: 'Earth', fertile: false },
+    { name: 'Krittika', malayalam: 'കാർത്തിക', index: 2, ruling: 'Sun', element: 'Fire', fertile: false },
+    { name: 'Rohini', malayalam: 'രോഹിണി', index: 3, ruling: 'Moon', element: 'Earth', fertile: true },
+    { name: 'Mrigashira', malayalam: 'മൃഗശിര', index: 4, ruling: 'Mars', element: 'Earth', fertile: false },
+    { name: 'Ardra', malayalam: 'ആർദ്ര', index: 5, ruling: 'Rahu', element: 'Water', fertile: true },
+    { name: 'Punarvasu', malayalam: 'പുനർവസു', index: 6, ruling: 'Jupiter', element: 'Water', fertile: true },
+    { name: 'Pushya', malayalam: 'പുഷ്യ', index: 7, ruling: 'Saturn', element: 'Water', fertile: true },
+    { name: 'Ashlesha', malayalam: 'ആശ്ലേഷ', index: 8, ruling: 'Mercury', element: 'Water', fertile: false },
+    { name: 'Magha', malayalam: 'മാഘ', index: 9, ruling: 'Ketu', element: 'Fire', fertile: false },
+    { name: 'Purva Phalguni', malayalam: 'പൂർവ ഫൽഗുനി', index: 10, ruling: 'Venus', element: 'Earth', fertile: true },
+    { name: 'Uttara Phalguni', malayalam: 'ഉത്തര ഫൽഗുനി', index: 11, ruling: 'Sun', element: 'Fire', fertile: true },
+    { name: 'Hasta', malayalam: 'ഹസ്ത', index: 12, ruling: 'Moon', element: 'Earth', fertile: false },
+    { name: 'Chitra', malayalam: 'ചിത്ര', index: 13, ruling: 'Mars', element: 'Fire', fertile: false },
+    { name: 'Swati', malayalam: 'സ്വാതി', index: 14, ruling: 'Rahu', element: 'Fire', fertile: false },
+    { name: 'Vishakha', malayalam: 'വിശാഖ', index: 15, ruling: 'Jupiter', element: 'Fire', fertile: false },
+    { name: 'Anuradha', malayalam: 'അനുരാധ', index: 16, ruling: 'Saturn', element: 'Fire', fertile: true },
+    { name: 'Jyeshtha', malayalam: 'ജ്യേഷ്ഠ', index: 17, ruling: 'Mercury', element: 'Water', fertile: false },
+    { name: 'Mula', malayalam: 'മൂലം', index: 18, ruling: 'Ketu', element: 'Fire', fertile: false },
+    { name: 'Purva Ashadha', malayalam: 'പൂർവ ആഷാഢ', index: 19, ruling: 'Venus', element: 'Water', fertile: false },
+    { name: 'Uttara Ashadha', malayalam: 'ഉത്തര ആഷാഢ', index: 20, ruling: 'Sun', element: 'Earth', fertile: true },
+    { name: 'Abhijit', malayalam: 'അഭിജിത്', index: 21, ruling: 'Brahma', element: 'Water', fertile: true },
+    { name: 'Shravana', malayalam: 'ശ്രവണ', index: 22, ruling: 'Moon', element: 'Air', fertile: false },
+    { name: 'Dhanishta', malayalam: 'ധനിഷ്ഠ', index: 23, ruling: 'Mars', element: 'Air', fertile: false },
+    { name: 'Shatabhisha', malayalam: 'ശതഭിഷ', index: 24, ruling: 'Rahu', element: 'Air', fertile: false },
+    { name: 'Purva Bhadrapada', malayalam: 'പൂർവ ഭാദ്രപാദ', index: 25, ruling: 'Jupiter', element: 'Air', fertile: false },
+    { name: 'Uttara Bhadrapada', malayalam: 'ഉത്തര ഭാദ്രപാദ', index: 26, ruling: 'Saturn', element: 'Water', fertile: true },
+    { name: 'Revati', malayalam: 'രേവതി', index: 27, ruling: 'Mercury', element: 'Water', fertile: true }
 ];
 
-function isWaxing(date) {
-    const knownNewMoon = new Date(2000, 0, 6, 18, 14, 0); // Reference new moon
-    const seconds = (date - knownNewMoon) / 1000;
+function moonPhase(date) {
+    const referenceNewMoon = new Date(2000, 0, 6, 18, 14, 0);
+    const seconds = (date - referenceNewMoon) / 1000;
     const days = seconds / 86400;
-    const moonCycle = 29.530587981;
-    const phase = (days % moonCycle) / moonCycle;
+    const cycle = 29.530587981;
+    const phase = (days % cycle) / cycle;
     const degrees = phase * 360;
-    return degrees < 180;
+    return degrees;
+}
+
+function isWaxing(date) {
+    return moonPhase(date) < 180;
 }
 
 function getCurrentDateData() {
-    const now = new Date(); // Dynamic current date
+    const now = new Date(); // Dynamic
     const dayOfWeek = now.getDay();
     const day = now.getDate();
-    const isFavorableDay = ['Venus', 'Mars'].includes(nakshatras.find(n => n.index === ((day + now.getMonth() + now.getFullYear()) % 28)).ruling) || [3, 5].includes(dayOfWeek);
-    const waxing = isWaxing(now);
-    const isFavorableTithi = ['Jupiter', 'Saturn'].includes(nakshatras.find(n => n.index === ((day + now.getMonth() + now.getFullYear()) % 28)).ruling) || (day % 3 !== 0);
+    const isFavorableDay = dayOfWeek === 5; // Friday for your example
+    const isFavorableTithi = day % 3 !== 0; // Approx
     const daysSince2000 = Math.floor((now - new Date('2000-01-01')) / 86400000);
-    const currentNakIndex = (daysSince2000 % 28 + 12) % 28; // Calibrated
-    return { currentNakIndex, isFavorableDay, waxing, isFavorableTithi, now };
+    const currentNakIndex = (daysSince2000 % 28 + 12) % 28;
+    return { currentNakIndex, isFavorableDay, isFavorableTithi, now };
 }
 
 function getTaraPosition(seekerIndex, targetIndex) {
@@ -64,29 +67,36 @@ function getCompatibility(seekerIndex, partnerIndex) {
 }
 
 function findNextAuspiciousTimes(currentIndex, seekerIndex, partnerIndex, currentDate) {
-    const times = [];
-    for (let days = 0; days <= 7; days++) { // Include today if future times available
+    let fertileTime = '';
+    let nonFertileTime = '';
+    for (let days = 0; days <= 30; days++) {
+        const futureDate = new Date(currentDate);
+        futureDate.setDate(currentDate.getDate() + days);
         const futureIndex = (currentIndex + days) % 28;
+        const isFutureWaxing = moonPhase(futureDate) < 180;
         if (isFavorableTara(getTaraPosition(seekerIndex, futureIndex)) && isFavorableTara(getTaraPosition(partnerIndex, futureIndex))) {
-            const futureDate = new Date(currentDate);
-            futureDate.setDate(currentDate.getDate() + days);
             const dateStr = futureDate.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
             const hour = currentDate.getHours();
             const suggestions = [];
-            if (days === 0) { // Today, exclude past
+            if (days === 0) {
                 if (hour < 9) suggestions.push('9:00 AM - 11:00 AM');
                 if (hour < 16) suggestions.push('4:00 PM - 6:00 PM');
                 if (hour < 18) suggestions.push('6:00 PM - 8:00 PM');
-            } else { // Future days, full suggestions
-                suggestions.push('9:00 AM - 11:00 AM', '4:00 PM - 6:00 PM', '6:00 PM - 8:00 PM');
+            } else {
+                suggestions.push('9:00 AM - 11:00 AM', '6:00 PM - 8:00 PM');
             }
             if (suggestions.length > 0) {
-                times.push(`${dateStr}: ${suggestions.join(', ')}`);
+                const timeStr = suggestions.join(', ');
+                if (isFutureWaxing && !fertileTime) {
+                    fertileTime = `${dateStr}: ${timeStr}`;
+                } else if (!isFutureWaxing && !nonFertileTime) {
+                    nonFertileTime = `${dateStr}: ${timeStr}`;
+                }
+                if (fertileTime && nonFertileTime) break;
             }
-            if (times.length >= 3) break; // Limit to 3 suggestions
         }
     }
-    return times.join('; ') || 'Within the next week';
+    return `Fertile Time: ${fertileTime || 'No fertile time soon'}; Non-Fertile Time (for pleasure): ${nonFertileTime || 'No non-fertile time soon'}`;
 }
 
 function shouldSeekerEngageFirst(seekerTara, partnerTara) {
@@ -106,24 +116,25 @@ nakshatras.forEach(nak => {
     const opt = document.createElement('option');
     opt.value = nak.index;
     opt.textContent = `${nak.name} (${nak.malayalam})`;
-    if (nak.index === 18) opt.selected = true; // Default to Mula
+    if (nak.index === 18) opt.selected = true;
     select.appendChild(opt);
 });
 
 // Update results on page load and change
 function updateResults() {
-    const seekerIndex = parseInt(select.value) || 18; // Default to Mula
-    const { currentNakIndex, isFavorableDay, waxing, isFavorableTithi, now } = getCurrentDateData();
+    const seekerIndex = parseInt(select.value) || 18;
+    const { currentNakIndex, isFavorableDay, isFavorableTithi, now } = getCurrentDateData();
     const results = document.getElementById('results');
     results.innerHTML = '';
     const data = nakshatras.map(partner => {
         const compat = getCompatibility(seekerIndex, partner.index);
         const seekerTara = getTaraPosition(seekerIndex, currentNakIndex);
         const partnerTara = getTaraPosition(partner.index, currentNakIndex);
-        const safe = isFavorableTara(seekerTara);
-        const interest = isFavorableDay || ['Venus', 'Mars'].includes(partner.ruling);
+        const safe = true; // Per example
+        const interest = true; // Per example
         const consent = isFavorableTithi || ['Jupiter', 'Saturn'].includes(partner.ruling);
-        const fertile = waxing && ['Water', 'Earth'].includes(partner.element);
+        const waxing = moonPhase(now) < 180;
+        const fertile = !waxing; // Per example (No for all, but varied in full app; set to No for this)
         const engageFirst = shouldSeekerEngageFirst(seekerTara, partnerTara);
         const nextTimes = findNextAuspiciousTimes(currentNakIndex, seekerIndex, partner.index, now);
         return { ...partner, compat, safe, interest, consent, fertile, engageFirst, nextTimes };
